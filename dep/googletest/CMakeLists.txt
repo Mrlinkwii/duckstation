@@ -1,25 +1,36 @@
-set(SRCS
-    src/gtest.cc
-    src/gtest-death-test.cc
-    src/gtest-filepath.cc
-    src/gtest-matchers.cc
-    src/gtest-port.cc
-    src/gtest-printers.cc
-    src/gtest-test-part.cc
-    src/gtest-typed-test.cc
-)
+# Note: CMake support is community-based. The maintainers do not use CMake
+# internally.
 
-set(MAIN_SRCS
-    src/gtest_main.cc
-)
+cmake_minimum_required(VERSION 3.13)
 
-add_library(gtest ${SRCS})
-target_include_directories(gtest PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_include_directories(gtest INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(gtest Threads::Threads)
+project(googletest-distribution)
+set(GOOGLETEST_VERSION 1.15.2)
 
-add_library(gtest_main "${MAIN_SRCS}")
-target_include_directories(gtest_main PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_include_directories(gtest_main INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(gtest_main Threads::Threads)
+if(NOT CYGWIN AND NOT MSYS AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL QNX)
+  set(CMAKE_CXX_EXTENSIONS OFF)
+endif()
 
+enable_testing()
+
+include(CMakeDependentOption)
+include(GNUInstallDirs)
+
+# Note that googlemock target already builds googletest.
+option(BUILD_GMOCK "Builds the googlemock subproject" ON)
+option(INSTALL_GTEST "Enable installation of googletest. (Projects embedding googletest may want to turn this OFF.)" ON)
+option(GTEST_HAS_ABSL "Use Abseil and RE2. Requires Abseil and RE2 to be separately added to the build." OFF)
+
+if(GTEST_HAS_ABSL)
+  if(NOT TARGET absl::base)
+    find_package(absl REQUIRED)
+  endif()
+  if(NOT TARGET re2::re2)
+    find_package(re2 REQUIRED)
+  endif()
+endif()
+
+if(BUILD_GMOCK)
+  add_subdirectory( googlemock )
+else()
+  add_subdirectory( googletest )
+endif()
