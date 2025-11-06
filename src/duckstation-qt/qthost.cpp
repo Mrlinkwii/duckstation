@@ -246,12 +246,7 @@ bool QtHost::EarlyProcessStartup()
   // To make matters even worse, setting the full path here doesn't work for Flatpaks... or anything outside of
   // KDE. Setting the application name alone does for flatpak. What a clusterfuck of a platform for basic tasks
   // that operating systems have done for decades.
-  if (getenv("container"))
-  {
-    // Flatpak.
-    QGuiApplication::setDesktopFileName(QStringLiteral("org.duckstation.DuckStation"));
-  }
-  else if (const char* current_desktop = getenv("XDG_CURRENT_DESKTOP");
+ if (const char* current_desktop = getenv("XDG_CURRENT_DESKTOP");
            current_desktop && std::strstr(current_desktop, "KDE"))
   {
     // AppImage or local build.
