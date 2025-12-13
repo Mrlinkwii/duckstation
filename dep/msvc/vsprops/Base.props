@@ -36,16 +36,17 @@
       <!-- Force ThinLTO for Release builds, MSVC doesn't seem to do it otherwise. -->
       <AdditionalOptions Condition="$(Configuration.Contains(Clang)) And $(Configuration.Contains(ReleaseLTCG))"> -flto=thin %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings Condition="!$(Configuration.Contains(Clang))">4324;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalOptions Condition="$(Configuration.Contains(Clang))">%(AdditionalOptions) -Wno-invalid-offsetof</AdditionalOptions>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <AdditionalOptions Condition="$(Configuration.Contains(Clang))">/clang:-fno-rtti %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="!$(Configuration.Contains(Clang))">/d1trimfile:&quot;$(SolutionDir)\&quot; %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="$(Configuration.Contains(Clang))">/clang:-fmacro-prefix-map=&quot;$(SolutionDir)\&quot;=. /clang:-ffile-prefix-map=&quot;$(SolutionDir)\&quot;=. %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="!$(Configuration.Contains(Clang)) And $(Configuration.Contains(ReleaseLTCG))">/d1trimfile:&quot;$(SolutionDir)\&quot; %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="$(Configuration.Contains(Clang)) And $(Configuration.Contains(ReleaseLTCG))">/clang:-fmacro-prefix-map=&quot;$(SolutionDir)\&quot;=. /clang:-ffile-prefix-map=&quot;$(SolutionDir)\&quot;=. %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(DepsLibDir)</AdditionalLibraryDirectories>
-      <AdditionalOptions>/PDBALTPATH:%_PDB% /Brepro %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="$(Configuration.Contains(ReleaseLTCG))">/PDBALTPATH:%_PDB% /Brepro %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
 
